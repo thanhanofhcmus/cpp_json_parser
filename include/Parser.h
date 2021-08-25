@@ -5,11 +5,12 @@
 #include <vector>
 
 /*
-json    = element
-element = literal | object | array
-literal = "null" | "true" | "false" | STRING | NUMBER
-array   = "[" (element ",")* "]"
-object  = "{" (STRING ":" element)* "}"
+json        = element
+element     = literal | object | array
+literal     = "null" | "true" | "false" | STRING | NUMBER
+array       = "[" (element | (element ",")*) "]"
+object      = "{" (object_elem | (object_elem ",")*) "}"
+object_elem = STRING ":" element
 */
 
 namespace json {

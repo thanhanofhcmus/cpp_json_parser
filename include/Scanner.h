@@ -19,6 +19,8 @@ private:
     void scan_number();
     void scan_string();
     void scan_identifier();
+    [[nodiscard]] auto scan_escape_sequence() -> char;
+    [[nodiscard]] auto scan_hex_digit() -> char;
 
     [[nodiscard]] auto is_on_digit(char c) const -> bool;
     [[nodiscard]] auto is_not_end() const -> bool;
@@ -26,6 +28,7 @@ private:
     auto advance() -> char;
     [[nodiscard]] auto peek() const -> char;
 
+    void update_start_position();
     void add_token(TokenType type, Token::literal_t literal = Token::NullLiteral{});
 
     void error(std::string const& message) const;

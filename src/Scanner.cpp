@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cassert>
 #include <sstream>
+#include <iomanip>
 
 namespace json  {
 
@@ -30,8 +31,7 @@ auto Scanner::scan() && -> std::vector<Token> {
 }
 
 void Scanner::scan_token() {
-    start_line_ = current_line_;
-    start_column_ = current_column_;
+    update_start_position();
     char c = advance();
     switch (c) {
 
@@ -43,7 +43,8 @@ void Scanner::scan_token() {
     case ':': add_token(TokenType::Colon);        break;
     case '"':           scan_string();            break;
     case '+': case '-': scan_number();            break;
-    //  DO NOTHING cause advance() takes care of increasing lines, column;
+    //  DO NOTHING cause advance() takes care of
+    // increasing current_line_, current_column_;
     case ' ': case '\n': case '\r': case '\t':    break;
     default: {
         if      (is_on_digit(c)) { scan_number(); }
@@ -66,21 +67,25 @@ void Scanner::scan_number() {
         double literal = std::stod(s);
         add_token(TokenType::Number, literal);
     } catch (std::invalid_argument& ignored) {
-        error("Cannot covert " + s + " to number");
+        error("Cannot convert " + s + " to number");
     }
 }
 
-// TODO: parsing escape sequence, hex digit
 void Scanner::scan_string() {
-    while (is_not_end() && peek() != '"') {
-        advance();
+    std::stringstream ss;
+    while (is_not_end()) {
+        char const c = advance();
+        if      (c == '"')  { break; }
+        else if (c == '\\') { ss << scan_escape_sequence(); }
+        else                { ss << c; }
     }
-    if (not is_not_end()) {
+
+    // dirty fix since is_not_end() will yield false 
+    // now if the last character of source_ is '"'
+    if (current_ > source_.length()) {
         error("Unterminated string");
     }
-    auto literal = source_.substr(start_ + 1, current_ - start_  - 1);
-    advance();
-    add_token(TokenType::String, literal);
+    add_token(TokenType::String, ss.str());
 }
 
 void Scanner::scan_identifier() {
@@ -94,6 +99,49 @@ void Scanner::scan_identifier() {
     else if (iden == "true")  { add_token(TokenType::True); }
     else if (iden == "false") { add_token(TokenType::False); }
     else                      { error('"' + iden + "\" is an invalid literal"); }
+}
+
+auto Scanner::scan_escape_sequence() -> char {
+    char const c = advance();
+
+    switch (c) {
+    case '\\': return '\\';
+    case '"':  return '"';
+    case '/':  return '/';
+    case 'b':  return '\b';
+    case 'f':  return '\f';
+    case 'n':  return '\n';
+    case 'r':  return '\r';
+    case 't':  return '\t';
+    case 'u':  return scan_hex_digit();
+    default: {
+        update_start_position();
+        error(std::string("\\") + c + " is an invalid escape character");
+        break;
+    }
+    }
+    return '\0';
+}
+
+auto Scanner::scan_hex_digit() -> char {
+    auto const factors = { 12u, 8u, 4u, 0u };
+    unsigned int hex_value = 0;
+    for (auto const factor : factors) {
+        auto const c = advance();
+        if      ('0' <= c && c <= '9') { hex_value += static_cast<unsigned int>(c - '0') << factor; }
+        else if ('a' <= c && c <= 'f') { hex_value += static_cast<unsigned int>(c - 'a') << factor; }
+        else if ('A' <= c && c <= 'F') { hex_value += static_cast<unsigned int>(c - 'A') << factor; }
+        else {
+            std::stringstream ss;
+            update_start_position();
+            ss << "Escape hex-code character can only be in [0, 9] or [a, z] or [A. Z], found \"";
+            ss << c << '"';
+            error(ss.str());
+        }
+    }
+
+    assert(0x000 <= hex_value && hex_value <= 0xFFFF);
+    return static_cast<char>(hex_value);
 }
 
 auto Scanner::is_on_digit(char c) const -> bool {
@@ -118,6 +166,11 @@ auto Scanner::advance() -> char {
 
 auto Scanner::peek() const -> char {
     return source_[current_];
+}
+
+void Scanner::update_start_position() {
+    start_column_ = current_column_;
+    start_line_ = current_line_;
 }
 
 void Scanner::add_token(TokenType type, Token::literal_t literal) {
