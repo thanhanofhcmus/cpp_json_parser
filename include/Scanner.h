@@ -2,6 +2,7 @@
 
 #include "Token.h"
 #include <vector>
+#include <string_view>
 
 namespace json {
 
@@ -36,7 +37,7 @@ private:
 private:
 
     std::vector<Token> tokens_;
-    std::string const& source_;
+    std::string_view source_;
     std::size_t start_;
     std::size_t start_line_;
     std::size_t start_column_;

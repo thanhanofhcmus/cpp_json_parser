@@ -4,13 +4,14 @@
 #include <cassert>
 #include <sstream>
 #include <iomanip>
+#include <charconv>
 
 namespace json  {
 
 Scanner::Scanner(std::string const& source)
 :
     tokens_(std::vector<Token>{}),
-    source_(std::move(source)),
+    source_(source),
     start_(0),
     start_line_(0),
     start_column_(0),
@@ -61,14 +62,13 @@ void Scanner::scan_number() {
         advance();
     }
 
-    auto s = source_.substr(start_, current_ - start_);
-    try {
-        // TODO: checking for invalid number
-        double literal = std::stod(s);
-        add_token(TokenType::Number, literal);
-    } catch (std::invalid_argument& ignored) {
-        error("Cannot convert " + s + " to number");
+    auto sv = source_.substr(start_, current_ - start_);
+    double num = 0;
+    auto [_, err] = std::from_chars(sv.data(), sv.data() + sv.size(), num);
+    if (err == std::errc::invalid_argument) {
+        error("Cannot convert " + std::string(sv) + " to number");
     }
+    add_token(TokenType::Number, num);
 }
 
 void Scanner::scan_string() {
@@ -98,7 +98,7 @@ void Scanner::scan_identifier() {
     if      (iden == "null")  { add_token(TokenType::Null); }
     else if (iden == "true")  { add_token(TokenType::True); }
     else if (iden == "false") { add_token(TokenType::False); }
-    else                      { error('"' + iden + "\" is an invalid literal"); }
+    else                      { error('"' + std::string(iden) + "\" is an invalid literal"); }
 }
 
 auto Scanner::scan_escape_sequence() -> char {
