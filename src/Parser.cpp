@@ -31,7 +31,7 @@ auto Parser::parse_element() -> Json {
 }
 
 auto Parser::parse_literal() -> Json {
-    auto token = advance();
+    auto const token = advance();
     switch (token.type) {
     case TT::Null:   return Json{};
     case TT::True:   return Json{true};
@@ -78,7 +78,7 @@ auto Parser::parse_object() -> Json {
 
 auto Parser::parse_object_elem() -> ObjectElemParsingResult {
     auto const& key_token = consume(TT::String, "Key of object element must be a string");
-    auto key = std::get<Json::string_t>(key_token.literal);
+    auto const key = std::get<Json::string_t>(key_token.literal);
     consume(TT::Colon, "Object must have a colon \":\" to separate a key-value pair");
     auto value = parse_element();
 
