@@ -10,5 +10,5 @@ auto main() -> int {
     [[maybe_unused]] auto s3 = R"({ "a": 1, "b": true, "c": null, d: "string" })";
     [[maybe_unused]] auto s4 = R"([ "\u0042", true])";
     // std::cout << json::parse_string(R"(true false)").to_string() << '\n';
-    std::cout << json::parse_string(s1).to_string() << '\n';
+    std::cout << json::parse_string(s4).to_string() << '\n';
 }

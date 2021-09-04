@@ -40,8 +40,6 @@ auto Parser::parse_literal() -> Json {
     case TT::String: return Json{std::get<Json::string_t>(token.literal)};
     default: error("Invalid literal", previous()); return Json{};
     }
-    assert(false);
-    return Json{};
 }
 
 auto Parser::parse_array() -> Json {
@@ -134,6 +132,7 @@ auto Parser::consume(TokenType type, std::string const& message) -> Token& {
     }
     error(message, peek());
     assert(false);
+    return advance(); // for MSVC C4715 - all path must return. I know it looks dirty
 }
 
 } // namespace json
