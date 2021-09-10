@@ -22,3 +22,5 @@ target_link_libraries(catch_main PRIVATE project_options)
 
 add_executable(tests tests.cpp)
 target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+
+catch_discover_tests(tests)

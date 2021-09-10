@@ -137,7 +137,7 @@ auto Json::to_string() const -> std::string {
     };
     auto object_elem_ts = [](object_elem_t elem) {
         auto&& [key, value] = std::move(elem);
-        return std::move(enclose(key, "\"", "\"")) + ": " + std::move(value.to_string());
+        return enclose(key, "\"", "\"") + ": " + value.to_string();
     };
 
     auto null_ts    = [](null_t)            -> std::string { return "null"; };

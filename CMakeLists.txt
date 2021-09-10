@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15.0)
+include(cmake/StandardSettings.cmake)
 project(json_parser VERSION 0.1.0)
 
-include(cmake/StandardSettings.cmake)
 
 # this library is for reusing compiler options
 add_library(project_options INTERFACE)
@@ -21,5 +21,5 @@ endif()
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     option(TEST_USE_FectchContent "Use FectContent instead of pre-installed catch2" OFF)
-    # add_subdirectory(test)
+    add_subdirectory(test)
 endif()
