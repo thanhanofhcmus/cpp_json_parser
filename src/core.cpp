@@ -1,6 +1,6 @@
-#include "core.h"
-#include "Scanner.h"
-#include "Parser.h"
+#include "json_parser/core.h"
+#include "detail/Scanner.h"
+#include "detail/Parser.h"
 
 namespace json {
 

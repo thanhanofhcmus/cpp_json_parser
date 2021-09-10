@@ -1,5 +1,5 @@
-#include "Scanner.h"
-#include "JsonException.h"
+#include "detail/Scanner.h"
+#include "json_parser/JsonException.h"
 #include <cctype>
 #include <cassert>
 #include <sstream>

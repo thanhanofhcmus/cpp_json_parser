@@ -21,6 +21,10 @@ target_link_libraries(catch_main PUBLIC Catch2::Catch2)
 target_link_libraries(catch_main PRIVATE project_options)
 
 add_executable(tests tests.cpp)
-target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+target_link_libraries(tests PRIVATE
+  project_warnings
+  catch_main
+  json_parser
+)
 
 catch_discover_tests(tests)
