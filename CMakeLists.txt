@@ -1,8 +1,25 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.15.0)
 project(json_parser VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+include(cmake/StandardSettings.cmake)
+
+# this library is for reusing compiler options
+add_library(project_options INTERFACE)
+target_include_directories(project_options INTERFACE ${PROJECT_SOURCE_DIR}/include)
+
+# this library is for reusing warnings
+add_library(project_warnings INTERFACE)
+
+include(cmake/CompilerWarnings.cmake)
+set_project_warnings(project_warnings)
 
 add_subdirectory(src)
+
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(CTest)
+endif()
+
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    option(TEST_USE_FectchContent "Use FectContent instead of pre-installed catch2" OFF)
+    # add_subdirectory(test)
+endif()
