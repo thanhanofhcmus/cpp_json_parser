@@ -40,21 +40,27 @@ public:
     Json()
         : type_(Type::Null), value_(null_t{}) { }
 
-    Json(Type type);
+    explicit Json(Type type);
 
-    Json(boolean_t boolean)
+    explicit Json(boolean_t boolean)
         : type_(Type::Boolean), value_(boolean) { }
 
-    Json(number_t number)
+    explicit Json(number_t number)
         : type_(Type::Number), value_(number) { }
 
-    Json(string_t string)
+    explicit Json(string_t string)
         : type_(Type::String), value_(std::move(string)) { }
 
-    Json(array_t array)
+    explicit Json(char const* string)
+        : type_(Type::String), value_(string) { }
+
+    explicit Json(array_t array)
         : type_(Type::Array), value_(std::move(array)) { }
 
-    Json(object_t object)
+    Json(std::initializer_list<Json> list)
+        : type_(Type::Array), value_(list) { }
+
+    explicit Json(object_t object)
         : type_(Type::Object), value_(std::move(object)) { }
 
     [[nodiscard]] auto is_null()   const noexcept -> bool;
@@ -68,7 +74,7 @@ public:
 
     [[nodiscard]] auto boolean() const -> boolean_t;
     [[nodiscard]] auto number() const -> number_t;
-    
+
     [[nodiscard]] auto string() -> string_t&;
     [[nodiscard]] auto string() const -> string_t const&;
 

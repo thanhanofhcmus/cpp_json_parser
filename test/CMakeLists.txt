@@ -20,7 +20,7 @@ add_library(catch_main STATIC catch_main.cpp)
 target_link_libraries(catch_main PUBLIC Catch2::Catch2)
 target_link_libraries(catch_main PRIVATE project_options)
 
-add_executable(tests tests.cpp)
+add_executable(tests json_value.cpp scanner.cpp)
 target_link_libraries(tests PRIVATE
   project_warnings
   catch_main

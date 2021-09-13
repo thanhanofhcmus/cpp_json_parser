@@ -1,4 +1,4 @@
-#include "detail/Parser.h"
+#include "json_parser/detail/Parser.h"
 #include <algorithm>
 #include <cassert>
 
@@ -45,7 +45,7 @@ auto Parser::parse_literal() -> Json {
 auto Parser::parse_array() -> Json {
     auto array = Json::array_t{};
 
-    if (match(TT::RightBracket)) { return array; }
+    if (match(TT::RightBracket)) { return Json{ array }; }
 
     array.push_back(parse_element());
 
@@ -55,13 +55,13 @@ auto Parser::parse_array() -> Json {
     }
     consume(TT::RightBracket, "Need right bracket \"]\" to terminate an array");
 
-    return array;
+    return Json{ array };
 }
 
 auto Parser::parse_object() -> Json {
     auto object = Json::object_t{};
 
-    if (match(TT::RightBrace)) { return object; }
+    if (match(TT::RightBrace)) { return Json{ object }; }
 
     insert_object_elem(object);
 
@@ -71,7 +71,7 @@ auto Parser::parse_object() -> Json {
     }
     consume(TT::RightBrace, "Need right brace \"}\" to terminate an object");
 
-    return object;
+    return  Json{ object };
 }
 
 auto Parser::parse_object_elem() -> ObjectElemParsingResult {

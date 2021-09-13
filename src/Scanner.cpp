@@ -1,4 +1,4 @@
-#include "detail/Scanner.h"
+#include "json_parser/detail/Scanner.h"
 #include "json_parser/JsonException.h"
 #include <cctype>
 #include <cassert>
@@ -128,6 +128,9 @@ auto Scanner::scan_hex_digit() -> char {
     }
 
     assert(0x000 <= hex_value && hex_value <= 0xFFFF);
+    if(0x000 <= hex_value && hex_value <= 0xFFFF) {
+        error("Escape hex-code value can only in range [0, 2^16-1(65535)], computed " + std::to_string(hex_value));
+    }
     return static_cast<char>(hex_value);
 }
 
